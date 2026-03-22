@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pratibha's Sports Academy — Student Registry</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --green:#00c97a;
+  --green-dark:#009a5e;
+  --green-glow:rgba(0,201,122,0.18);
+  --orange:#ff7c2a;
+  --bg:#f5f7f0;
+  --surface:#ffffff;
+  --card:#ffffff;
+  --sidebar:#0f1f14;
+  --sidebar2:#162b1c;
+  --text:#1a2e1c;
+  --muted:#7a9480;
+  --border:#dde8de;
+  --danger:#e8384f;
+  --shadow:0 4px 24px rgba(0,80,40,0.10);
+}
+
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Nunito',sans-serif;
+  min-height:100vh;
+  display:flex;
+  overflow-x:hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:260px;
+  min-height:100vh;
+  background:var(--sidebar);
+  display:flex;
+  flex-direction:column;
+  position:fixed;
+  left:0;top:0;bottom:0;
+  z-index:100;
+  overflow:hidden;
+}
+
+.sidebar::before{
+  content:'';
+  position:absolute;
+  bottom:-80px;right:-80px;
+  width:220px;height:220px;
+  background:radial-gradient(circle,rgba(0,201,122,0.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.sidebar-brand{
+  padding:32px 28px 24px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+
+.brand-icon{
+  width:46px;height:46px;
+  background:linear-gradient(135deg,var(--green),#00a862);
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  margin-bottom:14px;
+  box-shadow:0 4px 16px rgba(0,201,122,0.35);
+}
+
+.brand-name{
+  font-family:'Oswald',sans-serif;
+  font-size:19px;
+  letter-spacing:0.06em;
+  color:#fff;
+  line-height:1.2;
+}
+
+.brand-sub{
+  font-size:11px;
+  color:rgba(255,255,255,0.35);
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  margin-top:3px;
+  font-family:'Nunito Sans',sans-serif;
+}
+
+.sidebar-nav{
+  flex:1;
+  padding:20px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.nav-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:all 0.2s;
+  color:rgba(255,255,255,0.45);
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:0.01em;
+  border:none;
+  background:none;
+  width:100%;
+  text-align:left;
+}
+
+.nav-item:hover{
+  background:rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.8);
+}
+
+.nav-item.active{
+  background:rgba(0,201,122,0.15);
+  color:var(--green);
+}
+
+.nav-item .nav-icon{font-size:17px;}
+
+.sidebar-footer{
+  padding:20px 24px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+
+.teacher-chip{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.teacher-avatar{
+  width:38px;height:38px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--green),var(--orange));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Oswald',sans-serif;
+  font-size:16px;
+  color:#fff;
+  flex-shrink:0;
+}
+
+.teacher-info{}
+.teacher-name{font-size:14px;font-weight:700;color:#fff;}
+.teacher-role{font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-transform:uppercase;}
+
+/* ── MAIN ── */
+.main{
+  margin-left:260px;
+  flex:1;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* Topbar */
+.topbar{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:20px 40px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+}
+
+.page-title{
+  font-family:'Oswald',sans-serif;
+  font-size:24px;
+  letter-spacing:0.04em;
+  color:var(--text);
+}
+
+.page-title span{color:var(--green);}
+
+.topbar-actions{display:flex;gap:12px;align-items:center;}
+
+.badge-count{
+  background:var(--green-glow);
+  border:1px solid rgba(0,201,122,0.3);
+  color:var(--green-dark);
+  font-size:12px;
+  font-weight:700;
+  padding:5px 14px;
+  border-radius:100px;
+  font-family:'Nunito Sans',sans-serif;
+}
+
+/* Content area */
+.content{
+  padding:36px 40px;
+  flex:1;
+}
+
+/* Stats row */
+.stats-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:32px;
+  animation:fadeUp 0.6s ease both;
+}
+
+.stat-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:22px 24px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  box-shadow:var(--shadow);
+  transition:transform 0.2s;
+}
+.stat-card:hover{transform:translateY(-2px);}
+
+.stat-icon{
+  width:48px;height:48px;
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  flex-shrink:0;
+}
+
+.stat-icon.green{background:rgba(0,201,122,0.12);}
+.stat-icon.orange{background:rgba(255,124,42,0.12);}
+.stat-icon.blue{background:rgba(58,130,246,0.10);}
+.stat-icon.purple{background:rgba(139,92,246,0.10);}
+
+.stat-num{
+  font-family:'Oswald',sans-serif;
+  font-size:30px;
+  line-height:1;
+  color:var(--text);
+}
+
+.stat-lbl{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:600;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+  margin-top:4px;
+}
+
+/* Two-column layout */
+.two-col{
+  display:grid;
+  grid-template-columns:1fr 1.4fr;
+  gap:24px;
+  align-items:start;
+}
+
+/* Form Panel */
+.panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  animation:fadeUp 0.7s ease 0.1s both;
+}
+
+.panel-header{
+  background:linear-gradient(135deg,var(--sidebar) 0%,var(--sidebar2) 100%);
+  padding:22px 28px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.panel-header-icon{
+  width:34px;height:34px;
+  background:rgba(0,201,122,0.2);
+  border:1px solid rgba(0,201,122,0.3);
+  border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+}
+
+.panel-title{
+  font-family:'Oswald',sans-serif;
+  font-size:17px;
+  letter-spacing:0.05em;
+  color:#fff;
+}
+
+.panel-sub{font-size:12px;color:rgba(255,255,255,0.35);margin-top:1px;}
+
+.panel-body{padding:28px;}
+
+/* Form fields */
+.field{margin-bottom:18px;}
+
+.field label{
+  display:block;
+  font-size:11.5px;
+  font-weight:700;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:7px;
+  font-family:'Nunito Sans',sans-serif;
+}
+
+.field input,
+.field select,
+.field textarea{
+  width:100%;
+  background:var(--bg);
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  padding:12px 14px;
+  font-family:'Nunito',sans-serif;
+  font-size:14px;
+  color:var(--text);
+  outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(0,201,122,0.12);
+  background:#fff;
+}
+
+.field textarea{resize:none;height:72px;line-height:1.6;}
+
+.field select{appearance:none;cursor:pointer;}
+
+.field.error input,
+.field.error select,
+.field.error textarea{border-color:var(--danger);}
+
+.err-msg{
+  font-size:11px;color:var(--danger);
+  margin-top:4px;display:none;
+  font-weight:600;
+}
+.field.error .err-msg{display:block;}
+
+.half-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+.input-icon{position:relative;}
+.input-icon input{padding-right:44px;}
+.input-icon .unit{
+  position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  font-size:11px;color:var(--muted);font-weight:600;
+  font-family:'Nunito Sans',sans-serif;
+}
+
+.btn-add{
+  width:100%;
+  padding:15px;
+  background:linear-gradient(135deg,var(--green),var(--green-dark));
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  font-family:'Oswald',sans-serif;
+  font-size:16px;
+  letter-spacing:0.08em;
+  cursor:pointer;
+  transition:transform 0.15s,box-shadow 0.15s;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  margin-top:24px;
+  box-shadow:0 6px 24px rgba(0,201,122,0.35);
+}
+
+.btn-add:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,201,122,0.45);}
+.btn-add:active{transform:translateY(0);}
+
+/* Students Table Panel */
+.students-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  animation:fadeUp 0.7s ease 0.2s both;
+}
+
+.students-header{
+  padding:20px 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+
+.students-title{
+  font-family:'Oswald',sans-serif;
+  font-size:17px;
+  letter-spacing:0.04em;
+  color:var(--text);
+}
+
+.search-box{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--bg);
+  border:1.5px solid var(--border);
+  border-radius:9px;
+  padding:8px 14px;
+  font-size:13px;
+  color:var(--muted);
+}
+
+.search-box input{
+  border:none;background:none;outline:none;
+  font-family:'Nunito',sans-serif;
+  font-size:13px;color:var(--text);
+  width:150px;
+}
+
+/* Table */
+.table-wrap{overflow-x:auto;}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13.5px;
+}
+
+thead th{
+  background:var(--bg);
+  padding:12px 16px;
+  text-align:left;
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-family:'Nunito Sans',sans-serif;
+  white-space:nowrap;
+}
+
+tbody tr{
+  border-bottom:1px solid var(--border);
+  transition:background 0.15s;
+}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:#f9fdf9;}
+
+tbody td{
+  padding:14px 16px;
+  vertical-align:middle;
+  color:var(--text);
+}
+
+.student-name-cell{
+  display:flex;align-items:center;gap:10px;
+}
+
+.mini-avatar{
+  width:32px;height:32px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Oswald',sans-serif;
+  font-size:13px;
+  color:#fff;
+  flex-shrink:0;
+  font-weight:600;
+}
+
+.sport-tag{
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:100px;
+  font-size:11px;
+  font-weight:700;
+  font-family:'Nunito Sans',sans-serif;
+}
+
+.tag-track{background:rgba(0,201,122,0.1);color:#009a5e;}
+.tag-football{background:rgba(255,124,42,0.1);color:#c55800;}
+.tag-basketball{background:rgba(58,130,246,0.1);color:#1d56c4;}
+.tag-swimming{background:rgba(6,182,212,0.1);color:#0880a0;}
+.tag-cricket{background:rgba(139,92,246,0.1);color:#6d28d9;}
+.tag-default{background:rgba(120,120,120,0.1);color:#555;}
+
+.action-btn{
+  background:none;border:none;cursor:pointer;
+  padding:6px 8px;border-radius:7px;
+  font-size:15px;transition:background 0.15s;
+  color:var(--muted);
+}
+.action-btn:hover{background:var(--bg);color:var(--danger);}
+.action-btn.view:hover{color:var(--green);}
+
+.empty-state{
+  text-align:center;
+  padding:60px 20px;
+  color:var(--muted);
+}
+
+.empty-state .empty-icon{font-size:48px;margin-bottom:14px;opacity:0.4;}
+.empty-state p{font-size:14px;font-weight:500;}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:32px;right:32px;
+  background:var(--sidebar);
+  color:#fff;
+  padding:14px 22px;
+  border-radius:12px;
+  font-size:14px;
+  font-weight:600;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.25);
+  transform:translateY(80px);
+  opacity:0;
+  transition:all 0.35s cubic-bezier(.34,1.56,.64,1);
+  z-index:999;
+  pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--green);
+  flex-shrink:0;
+}
+
+/* Animations */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* Avatar colors */
+.av0{background:linear-gradient(135deg,#00c97a,#009a5e);}
+.av1{background:linear-gradient(135deg,#ff7c2a,#d95a00);}
+.av2{background:linear-gradient(135deg,#3a82f6,#1d56c4);}
+.av3{background:linear-gradient(135deg,#8b5cf6,#6d28d9);}
+.av4{background:linear-gradient(135deg,#06b6d4,#0880a0);}
+.av5{background:linear-gradient(135deg,#f43f5e,#c4153a);}
+
+/* Responsive */
+@media(max-width:1100px){
+  .two-col{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-260px);}
+  .main{margin-left:0;}
+  .content{padding:24px 16px;}
+  .topbar{padding:16px 20px;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">🏆</div>
+    <div class="brand-name">PRATIBHA'S<br/>SPORTS ACADEMY</div>
+    <div class="brand-sub">Student Portal</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" onclick="showTab('dashboard')">
+      <span class="nav-icon">📊</span> Dashboard
+    </button>
+    <button class="nav-item" onclick="showTab('add')">
+      <span class="nav-icon">➕</span> Add Student
+    </button>
+    <button class="nav-item" onclick="showTab('list')">
+      <span class="nav-icon">👥</span> All Students
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="teacher-chip">
+      <div class="teacher-avatar">P</div>
+      <div class="teacher-info">
+        <div class="teacher-name">Pratibha</div>
+        <div class="teacher-role">Sports Teacher</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="page-title">Student <span>Registry</span></div>
+    <div class="topbar-actions">
+      <div class="badge-count" id="totalBadge">0 Students</div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon green">👥</div>
+        <div>
+          <div class="stat-num" id="stat-total">0</div>
+          <div class="stat-lbl">Total Students</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">⚽</div>
+        <div>
+          <div class="stat-num" id="stat-sports">0</div>
+          <div class="stat-lbl">Sports Covered</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue">📏</div>
+        <div>
+          <div class="stat-num" id="stat-avgheight">—</div>
+          <div class="stat-lbl">Avg Height (cm)</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">⚖️</div>
+        <div>
+          <div class="stat-num" id="stat-avgweight">—</div>
+          <div class="stat-lbl">Avg Weight (kg)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Two column -->
+    <div class="two-col">
+
+      <!-- ADD FORM -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-icon">📝</div>
+          <div>
+            <div class="panel-title">ADD NEW STUDENT</div>
+            <div class="panel-sub">Fill in complete student details</div>
+          </div>
+        </div>
+        <div class="panel-body">
+
+          <div class="field" id="f-name">
+            <label>Full Name</label>
+            <input id="inp-name" type="text" placeholder="e.g. Ravi Kumar"/>
+            <div class="err-msg">Name is required.</div>
+          </div>
+
+          <div class="half-row">
+            <div class="field" id="f-class">
+              <label>Class / Grade</label>
+              <select id="inp-class">
+                <option value="">— Select —</option>
+                <option>Class 6</option><option>Class 7</option>
+                <option>Class 8</option><option>Class 9</option>
+                <option>Class 10</option><option>Class 11</option>
+                <option>Class 12</option>
+              </select>
+              <div class="err-msg">Select a class.</div>
+            </div>
+            <div class="field" id="f-sport">
+              <label>Sport</label>
+              <select id="inp-sport">
+                <option value="">— Select —</option>
+                <option>Track & Field</option>
+                <option>Football</option>
+                <option>Basketball</option>
+                <option>Swimming</option>
+                <option>Cricket</option>
+                <option>Volleyball</option>
+                <option>Badminton</option>
+                <option>Table Tennis</option>
+              </select>
+              <div class="err-msg">Select a sport.</div>
+            </div>
+          </div>
+
+          <div class="half-row">
+            <div class="field" id="f-height">
+              <label>Height</label>
+              <div class="input-icon">
+                <input id="inp-height" type="number" placeholder="160" min="80" max="250"/>
+                <span class="unit">cm</span>
+              </div>
+              <div class="err-msg">Enter valid height.</div>
+            </div>
+            <div class="field" id="f-weight">
+              <label>Weight</label>
+              <div class="input-icon">
+                <input id="inp-weight" type="number" placeholder="55" min="20" max="200"/>
+                <span class="unit">kg</span>
+              </div>
+              <div class="err-msg">Enter valid weight.</div>
+            </div>
+          </div>
+
+          <div class="half-row">
+            <div class="field" id="f-age">
+              <label>Age</label>
+              <div class="input-icon">
+                <input id="inp-age" type="number" placeholder="14" min="5" max="25"/>
+                <span class="unit">yrs</span>
+              </div>
+              <div class="err-msg">Enter valid age.</div>
+            </div>
+            <div class="field">
+              <label>Gender</label>
+              <select id="inp-gender">
+                <option value="">— Select —</option>
+                <option>Male</option><option>Female</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field" id="f-address">
+            <label>Address</label>
+            <textarea id="inp-address" placeholder="Student's home address..."></textarea>
+            <div class="err-msg">Address is required.</div>
+          </div>
+
+          <div class="field">
+            <label>Performance Level</label>
+            <select id="inp-perf">
+              <option>Beginner</option>
+              <option>Intermediate</option>
+              <option>Advanced</option>
+              <option>Elite</option>
+            </select>
+          </div>
+
+          <button class="btn-add" onclick="addStudent()">
+            <span>➕</span> ADD STUDENT TO REGISTRY
+          </button>
+        </div>
+      </div>
+
+      <!-- STUDENTS TABLE -->
+      <div class="students-panel">
+        <div class="students-header">
+          <div class="students-title">🏅 Student Roster</div>
+          <div class="search-box">
+            🔍 <input id="searchInput" placeholder="Search name..." oninput="renderTable()"/>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Student</th>
+                <th>Class</th>
+                <th>Sport</th>
+                <th>Ht</th>
+                <th>Wt</th>
+                <th>Age</th>
+                <th>Level</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="studentTableBody"></tbody>
+          </table>
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">🏃</div>
+            <p>No students yet. Add your first student!</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toastMsg">Student added!</span>
+</div>
+
+<script>
+let students = JSON.parse(localStorage.getItem('pratibha_students') || '[]');
+
+const SPORT_TAGS = {
+  'Track & Field':'tag-track','Football':'tag-football',
+  'Basketball':'tag-basketball','Swimming':'tag-swimming',
+  'Cricket':'tag-cricket'
+};
+
+const PERF_COLORS = {
+  Beginner:'#64748b',Intermediate:'#0284c7',Advanced:'#16a34a',Elite:'#d97706'
+};
+
+const AV_COLS = ['av0','av1','av2','av3','av4','av5'];
+
+function getInitials(name){
+  return name.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+}
+
+function sportTag(sport){
+  const cls = SPORT_TAGS[sport] || 'tag-default';
+  return `<span class="sport-tag ${cls}">${sport||'—'}</span>`;
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function updateStats(){
+  const n=students.length;
+  document.getElementById('stat-total').textContent=n;
+  document.getElementById('totalBadge').textContent=n+' Student'+(n!==1?'s':'');
+  
+  const sports=new Set(students.map(s=>s.sport).filter(Boolean));
+  document.getElementById('stat-sports').textContent=sports.size;
+  
+  if(n>0){
+    const avgH=(students.reduce((a,s)=>a+Number(s.height||0),0)/n).toFixed(0);
+    const avgW=(students.reduce((a,s)=>a+Number(s.weight||0),0)/n).toFixed(1);
+    document.getElementById('stat-avgheight').textContent=avgH;
+    document.getElementById('stat-avgweight').textContent=avgW;
+  } else {
+    document.getElementById('stat-avgheight').textContent='—';
+    document.getElementById('stat-avgweight').textContent='—';
+  }
+}
+
+function renderTable(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const filtered=students.filter(s=>s.name.toLowerCase().includes(q));
+  const tbody=document.getElementById('studentTableBody');
+  const empty=document.getElementById('emptyState');
+  
+  if(filtered.length===0){
+    tbody.innerHTML='';
+    empty.style.display='block';
+    return;
+  }
+  empty.style.display='none';
+  
+  tbody.innerHTML=filtered.map((s,i)=>{
+    const avCls=AV_COLS[i%AV_COLS.length];
+    const pColor=PERF_COLORS[s.perf]||'#555';
+    return `<tr>
+      <td style="color:var(--muted);font-size:12px;font-weight:700;">${String(i+1).padStart(2,'0')}</td>
+      <td>
+        <div class="student-name-cell">
+          <div class="mini-avatar ${avCls}">${getInitials(s.name)}</div>
+          <div>
+            <div style="font-weight:700;font-size:13.5px;">${s.name}</div>
+            <div style="font-size:11px;color:var(--muted);">${s.gender||''}</div>
+          </div>
+        </div>
+      </td>
+      <td style="font-weight:600;font-size:13px;">${s.cls}</td>
+      <td>${sportTag(s.sport)}</td>
+      <td style="font-weight:600;">${s.height||'—'}</td>
+      <td style="font-weight:600;">${s.weight||'—'}</td>
+      <td>${s.age||'—'}</td>
+      <td><span style="font-size:11px;font-weight:700;color:${pColor};">● ${s.perf}</span></td>
+      <td>
+        <button class="action-btn" onclick="deleteStudent(${students.indexOf(s)})" title="Remove">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function validate(){
+  const rules=[
+    {id:'inp-name',fid:'f-name',check:v=>v.trim().length>=2},
+    {id:'inp-class',fid:'f-class',check:v=>v!==''},
+    {id:'inp-sport',fid:'f-sport',check:v=>v!==''},
+    {id:'inp-height',fid:'f-height',check:v=>v&&Number(v)>=80&&Number(v)<=250},
+    {id:'inp-weight',fid:'f-weight',check:v=>v&&Number(v)>=20&&Number(v)<=200},
+    {id:'inp-age',fid:'f-age',check:v=>v&&Number(v)>=5&&Number(v)<=25},
+    {id:'inp-address',fid:'f-address',check:v=>v.trim().length>=5},
+  ];
+  let ok=true;
+  rules.forEach(r=>{
+    const el=document.getElementById(r.id);
+    const fg=document.getElementById(r.fid);
+    if(!r.check(el.value)){fg.classList.add('error');ok=false;}
+    else{fg.classList.remove('error');}
+  });
+  return ok;
+}
+
+function addStudent(){
+  if(!validate())return;
+  const s={
+    name:document.getElementById('inp-name').value.trim(),
+    cls:document.getElementById('inp-class').value,
+    sport:document.getElementById('inp-sport').value,
+    height:document.getElementById('inp-height').value,
+    weight:document.getElementById('inp-weight').value,
+    age:document.getElementById('inp-age').value,
+    gender:document.getElementById('inp-gender').value,
+    address:document.getElementById('inp-address').value.trim(),
+    perf:document.getElementById('inp-perf').value,
+    id:Date.now(),
+  };
+  students.unshift(s);
+  localStorage.setItem('pratibha_students',JSON.stringify(students));
+  renderTable();
+  updateStats();
+  showToast(`✅ ${s.name} added to registry!`);
+  // Reset
+  ['inp-name','inp-height','inp-weight','inp-age','inp-address'].forEach(id=>document.getElementById(id).value='');
+  ['inp-class','inp-sport','inp-gender'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('inp-perf').value='Beginner';
+}
+
+function deleteStudent(idx){
+  if(!confirm('Remove this student from the registry?'))return;
+  const name=students[idx].name;
+  students.splice(idx,1);
+  localStorage.setItem('pratibha_students',JSON.stringify(students));
+  renderTable();
+  updateStats();
+  showToast(`🗑️ ${name} removed.`);
+}
+
+// Remove error on input
+document.querySelectorAll('input,select,textarea').forEach(el=>{
+  el.addEventListener('input',()=>{
+    const fg=el.closest('.field');
+    if(fg)fg.classList.remove('error');
+  });
+});
+
+// Init
+renderTable();
+updateStats();
+</script>
+</body>
+</html>
